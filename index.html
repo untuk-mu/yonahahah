@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAU NGENTOD GA?</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffdde1;
+            background-image: none;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 500px;
+            position: relative;
+            transition: opacity 0.5s ease-in-out;
+            backdrop-filter: blur(10px);
+        }
+        .image {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 1rem;
+            margin: 1rem 0;
+        }
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            position: relative;
+            min-height: 60px;
+        }
+        .yes-btn {
+            padding: 0.5rem 2rem;
+            font-size: 1.2rem;
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 100;
+        }
+        .no-btn {
+            padding: 0.5rem 2rem;
+            font-size: 1.2rem;
+            background: #c7c7c7;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .no-btn.moving {
+            position: absolute;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .success-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffdde1;
+            background-image: none;
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .success-container.visible {
+            display: flex;
+            opacity: 1;
+        }
+        .success-image {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+        .success-text {
+            font-size: 2rem;
+            color: #ff4d6d;
+            text-align: center;
+            margin: 2rem;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(5px);
+        }
+        .yes-btn.growing {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <h1 id="title">MAU NGENTOD GA?</h1>
+        <p id="subtitle">PLISS</p>
+        <img src="https://media1.tenor.com/m/Fy9zovre5VAAAAAC/bubu-dudu-kisses.gif" alt="Valentine" class="image" id="valentineImage">
+        <div class="buttons">
+            <button class="yes-btn" id="yesBtn">GAS</button>
+            <button class="no-btn" id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div class="success-container" id="successContainer">
+        <img src="https://media1.tenor.com/m/XhK036RdGdUAAAAC/jerry-beg.gif" alt="Success" class="success-image">
+        <p class="success-text"></p>
+    </div>
+
+    <script>
+        const phrases = ["No","Are you sure?","What if I asked really nicely?","Pretty please","With a chocolate rice cake on top","What about a matcha frostie","PLEASE POOKIE","But :*(","I am going to die","Yep im dead","ok ur talking to nathan's ghost","please babe",":((((","PRETTY PLEASE","No :("];
+        let phraseIndex = 0;
+        let yesScale = 1;
+        let isTransitioning = false;
+        let isFirstNoClick = true;
+
+        function getRandomPosition() {
+            const container = document.querySelector('.container');
+            const noBtn = document.getElementById('noBtn');
+            const containerRect = container.getBoundingClientRect();
+            const noBtnRect = noBtn.getBoundingClientRect();
+
+            const maxX = containerRect.width - noBtnRect.width;
+            const maxY = containerRect.height - noBtnRect.height;
+
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            return { x: randomX, y: randomY };
+        }
+
+        document.getElementById('yesBtn').addEventListener('click', () => {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            const yesBtn = document.getElementById('yesBtn');
+            const mainContainer = document.getElementById('mainContainer');
+            const successContainer = document.getElementById('successContainer');
+
+            yesBtn.classList.add('growing');
+            
+            function grow() {
+                yesScale *= 1.5;
+                yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
+                
+                if (yesScale < 100) {
+                    requestAnimationFrame(grow);
+                } else {
+                    successContainer.classList.add('visible');
+                    mainContainer.style.opacity = 0;
+                    setTimeout(() => {
+                        mainContainer.classList.add('hidden');
+                        yesBtn.classList.add('hidden');
+                    }, 500);
+                }
+            }
+            
+            grow();
+        });
+
+        document.getElementById('noBtn').addEventListener('click', () => {
+            if (isTransitioning) return;
+            
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            const noBtn = document.getElementById('noBtn');
+            noBtn.textContent = phrases[phraseIndex];
+            
+            if (isFirstNoClick) {
+                if ('random' === 'random') {
+                    noBtn.classList.add('moving');
+                }
+                isFirstNoClick = false;
+            }
+            
+            
+            const pos = getRandomPosition();
+            noBtn.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+            
+        });
+    </script>
+</body>
+</html>
